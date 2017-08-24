@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\App\Api;
 
+use App\Api\Formatter\ResponseDatasetsFormatterInterface;
 use App\Api\VehicleApiService;
 use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\VehicleModelFetcherInterface;
 
@@ -11,6 +12,11 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
      * @var VehicleModelFetcherInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $modelFetcher;
+
+    /**
+     * @var ResponseDatasetsFormatterInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $responseFormatter;
 
     /**
      * @var VehicleApiService
@@ -23,8 +29,9 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->modelFetcher = $this->createVehicleModelFetcherInterfaceMock();
+        $this->responseFormatter = $this->createResponseDatasetsFormatterInterfaceMock();
 
-        $this->service = new VehicleApiService($this->modelFetcher);
+        $this->service = new VehicleApiService($this->modelFetcher, $this->responseFormatter);
     }
 
     /**
@@ -33,6 +40,7 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
     public function tearDown()
     {
         $this->modelFetcher = null;
+        $this->responseFormatter = null;
         $this->service = null;
     }
 
@@ -43,6 +51,7 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
         $modelName = 'Model';
 
         $prepModelData = ['some valid model data'];
+        $prepFormattedData = ['some formatted valid model data'];
 
         $this->modelFetcher->expects($this->once())
             ->method('getVehicleModelData')
@@ -53,15 +62,24 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
             )
             ->will($this->returnValue($prepModelData));
 
+        $this->responseFormatter->expects($this->once())
+            ->method('formatDatasets')
+            ->with($this->identicalTo($prepModelData))
+            ->will($this->returnValue($prepFormattedData));
+
         $result = $this->service->getVehicleModelData($modelYear, $manufacturer, $modelName);
 
-        $this->assertSame(
-            [
-                'Count'   => count($prepModelData),
-                'Results' => $prepModelData,
-            ],
-            $result
-        );
+        $this->assertSame($prepFormattedData, $result);
+    }
+
+    /**
+     * Create mock for ResponseDatasetsFormatterInterface.
+     *
+     * @return ResponseDatasetsFormatterInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private function createResponseDatasetsFormatterInterfaceMock()
+    {
+        return $this->getMockBuilder(ResponseDatasetsFormatterInterface::class)->getMock();
     }
 
     /**

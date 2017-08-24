@@ -2,6 +2,7 @@
 
 namespace App\Api;
 
+use App\Api\Formatter\ResponseDatasetsFormatterInterface;
 use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\VehicleModelFetcherInterface;
 
 class VehicleApiService implements VehicleApiServiceInterface
@@ -12,28 +13,22 @@ class VehicleApiService implements VehicleApiServiceInterface
     private $modelFetcher;
 
     /**
-     * Constructor.
-     *
-     * @param VehicleModelFetcherInterface $modelFetcher
+     * @var ResponseDatasetsFormatterInterface
      */
-    public function __construct(VehicleModelFetcherInterface $modelFetcher)
-    {
-        $this->modelFetcher = $modelFetcher;
-    }
+    private $responseFormatter;
 
     /**
-     * Format datasets for response.
+     * Constructor.
      *
-     * @param array $modelData
-     *
-     * @return array
+     * @param VehicleModelFetcherInterface       $modelFetcher
+     * @param ResponseDatasetsFormatterInterface $responseFormatter
      */
-    private function formatDatasetsForResponse(array $modelData)
-    {
-        return [
-            'Count'   => count($modelData),
-            'Results' => $modelData,
-        ];
+    public function __construct(
+        VehicleModelFetcherInterface $modelFetcher,
+        ResponseDatasetsFormatterInterface $responseFormatter
+    ) {
+        $this->modelFetcher = $modelFetcher;
+        $this->responseFormatter = $responseFormatter;
     }
 
     /**
@@ -43,6 +38,6 @@ class VehicleApiService implements VehicleApiServiceInterface
     {
         $modelData = $this->modelFetcher->getVehicleModelData($modelYear, $manufacturer, $modelName);
 
-        return $this->formatDatasetsForResponse($modelData);
+        return $this->responseFormatter->formatDatasets($modelData);
     }
 }

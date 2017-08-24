@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Api\Formatter\ResponseDatasetsFormatter;
+use App\Api\Formatter\ResponseDatasetsFormatterInterface;
 use App\Api\VehicleApiService;
 use App\Api\VehicleApiServiceInterface;
 use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\DataConversion\VehicleModelDataConverter;
@@ -37,6 +39,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(ApiDataConverterInterface::class, ApiDataConverter::class);
         $this->app->bind(ClientInterface::class, Client::class);
+        $this->app->bind(ResponseDatasetsFormatterInterface::class, ResponseDatasetsFormatter::class);
         $this->app->bind(VehicleApiServiceInterface::class, VehicleApiService::class);
         $this->app->bind(VehicleModelDataConverterInterface::class, VehicleModelDataConverter::class);
         $this->app->bind(VehicleModelDataConverterFacadeInterface::class, VehicleModelDataConverterFacade::class);
