@@ -44,7 +44,7 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
         $this->service = null;
     }
 
-    public function testVehicleModelDataSuccess()
+    public function testGetVehicleModelDataSuccess()
     {
         $modelYear = '2017';
         $manufacturer = 'Manufacturer';
