@@ -7,6 +7,8 @@ use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\DataConversion\ApiDataConvert
 use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\DataConversion\VehicleModelDataConverterFacade;
 use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\DataConversion\VehicleModelDataConverterFacadeInterface;
 use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\DataConversion\VehicleModelDataConverterInterface;
+use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\VehicleModelFetcher;
+use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\VehicleModelFetcherInterface;
 use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\DataConversion\ApiDataConverterInterface;
 use Illuminate\Support\ServiceProvider;
 
@@ -32,5 +34,6 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ApiDataConverterInterface::class, ApiDataConverter::class);
         $this->app->bind(VehicleModelDataConverterInterface::class, VehicleModelDataConverter::class);
         $this->app->bind(VehicleModelDataConverterFacadeInterface::class, VehicleModelDataConverterFacade::class);
+        $this->app->bind(VehicleModelFetcherInterface::class, VehicleModelFetcher::class);
     }
 }
