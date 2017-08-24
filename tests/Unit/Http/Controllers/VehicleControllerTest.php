@@ -4,6 +4,7 @@ namespace Tests\Unit\App\Http\Controllers;
 
 use App\Api\VehicleApiServiceInterface;
 use App\Http\Controllers\VehicleController;
+use Illuminate\Http\Request;
 
 class VehicleControllerTest extends \PHPUnit_Framework_TestCase
 {
@@ -48,6 +49,29 @@ class VehicleControllerTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($prepModelData));
 
         $result = $this->controller->showModels($apiService, $modelYear, $manufacturer, $modelName);
+
+        $this->assertSame($prepModelData, $result);
+    }
+
+    public function testShowModelsPostSuccess()
+    {
+        $jsonData = [
+            'valid'   => 'model',
+            'request' => 'data',
+        ];
+
+        $request = new Request([], [], [], [], [], [], json_encode($jsonData));
+
+        $prepModelData = ['some valid model data'];
+
+        $apiService = $this->createVehicleApiServiceInterfaceMock();
+
+        $apiService->expects($this->once())
+            ->method('getVehicleModelDataByArray')
+            ->with($this->identicalTo($jsonData))
+            ->will($this->returnValue($prepModelData));
+
+        $result = $this->controller->showModelsPost($apiService, $request);
 
         $this->assertSame($prepModelData, $result);
     }
