@@ -2,8 +2,8 @@
 
 namespace Tests\Unit\App\Http\Controllers;
 
+use App\Api\VehicleApiServiceInterface;
 use App\Http\Controllers\VehicleController;
-use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\VehicleModelFetcherInterface;
 
 class VehicleControllerTest extends \PHPUnit_Framework_TestCase
 {
@@ -36,9 +36,9 @@ class VehicleControllerTest extends \PHPUnit_Framework_TestCase
 
         $prepModelData = ['some valid model data'];
 
-        $vehicleModelFetcher = $this->createVehicleModelFetcherInterfaceMock();
+        $apiService = $this->createVehicleApiServiceInterfaceMock();
 
-        $vehicleModelFetcher->expects($this->once())
+        $apiService->expects($this->once())
             ->method('getVehicleModelData')
             ->with(
                 $this->identicalTo($modelYear),
@@ -47,24 +47,18 @@ class VehicleControllerTest extends \PHPUnit_Framework_TestCase
             )
             ->will($this->returnValue($prepModelData));
 
-        $result = $this->controller->showModels($vehicleModelFetcher, $modelYear, $manufacturer, $modelName);
+        $result = $this->controller->showModels($apiService, $modelYear, $manufacturer, $modelName);
 
-        $this->assertSame(
-            [
-                'Count'   => count($prepModelData),
-                'Results' => $prepModelData
-            ],
-            $result
-        );
+        $this->assertSame($prepModelData, $result);
     }
 
     /**
-     * Create mock for VehicleModelFetcherInterface.
+     * Create mock for VehicleApiServiceInterface.
      *
-     * @return VehicleModelFetcherInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @return VehicleApiServiceInterface|\PHPUnit_Framework_MockObject_MockObject
      */
-    private function createVehicleModelFetcherInterfaceMock()
+    private function createVehicleApiServiceInterfaceMock()
     {
-        return $this->getMockBuilder(VehicleModelFetcherInterface::class)->getMock();
+        return $this->getMockBuilder(VehicleApiServiceInterface::class)->getMock();
     }
 }
