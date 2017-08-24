@@ -14,4 +14,13 @@ interface VehicleApiServiceInterface
      * @return array
      */
     public function getVehicleModelData($modelYear, $manufacturer, $modelName);
+
+    /**
+     * Get vehicle model data by array.
+     *
+     * @param array|null $modelData
+     *
+     * @return array
+     */
+    public function getVehicleModelDataByArray($modelData);
 }

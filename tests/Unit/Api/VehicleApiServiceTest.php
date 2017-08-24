@@ -53,21 +53,84 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
         $prepModelData = ['some valid model data'];
         $prepFormattedData = ['some formatted valid model data'];
 
-        $this->modelFetcher->expects($this->once())
-            ->method('getVehicleModelData')
-            ->with(
-                $this->identicalTo($modelYear),
-                $this->identicalTo($manufacturer),
-                $this->identicalTo($modelName)
-            )
-            ->will($this->returnValue($prepModelData));
+        $this->setUpModelFetcherGetVehicleModelData($modelYear, $manufacturer, $modelName, $prepModelData);
 
-        $this->responseFormatter->expects($this->once())
-            ->method('formatDatasets')
-            ->with($this->identicalTo($prepModelData))
-            ->will($this->returnValue($prepFormattedData));
+        $this->setUpResponseFormatterFormatDatasets($prepModelData, $prepFormattedData);
 
         $result = $this->service->getVehicleModelData($modelYear, $manufacturer, $modelName);
+
+        $this->assertSame($prepFormattedData, $result);
+    }
+
+    /**
+     * @param array|null $modelData
+     *
+     * @dataProvider provideGetVehicleModelDataByArrayInvalidArrayData
+     */
+    public function testGetVehicleModelDataByArraySuccessInvalidArray($modelData)
+    {
+        $prepFormattedData = ['some formatted data'];
+
+        $this->setUpResponseFormatterFormatDatasets([], $prepFormattedData);
+
+        $result = $this->service->getVehicleModelDataByArray($modelData);
+
+        $this->assertSame($prepFormattedData, $result);
+    }
+
+    /**
+     * Data provider.
+     *
+     * @return array
+     */
+    public function provideGetVehicleModelDataByArrayInvalidArrayData()
+    {
+        return [
+            'null' => [
+                null,
+            ],
+            'missing key "modelYear"' => [
+                [
+                    'manufacturer' => 'Manufacturer',
+                    'model'        => 'Model',
+                ],
+            ],
+            'missing key "manufacturer"' => [
+                [
+                    'modelYear'    => 2017,
+                    'model'        => 'Model',
+                ],
+            ],
+            'missing key "model"' => [
+                [
+                    'modelYear'    => 2017,
+                    'manufacturer' => 'Manufacturer',
+                ],
+            ],
+        ];
+    }
+
+    public function testGetVehicleModelDataByArraySuccessValidArray()
+    {
+        $modelData = [
+            'modelYear'    => 2017,
+            'manufacturer' => 'Manufacturer',
+            'model'        => 'Model',
+        ];
+
+        $prepModelData = ['some vehicle model data'];
+        $prepFormattedData = ['some formatted vehicle model data'];
+
+        $this->setUpModelFetcherGetVehicleModelData(
+            $modelData['modelYear'],
+            $modelData['manufacturer'],
+            $modelData['model'],
+            $prepModelData
+        );
+
+        $this->setUpResponseFormatterFormatDatasets($prepModelData, $prepFormattedData);
+
+        $result = $this->service->getVehicleModelDataByArray($modelData);
 
         $this->assertSame($prepFormattedData, $result);
     }
@@ -90,5 +153,44 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
     private function createVehicleModelFetcherInterfaceMock()
     {
         return $this->getMockBuilder(VehicleModelFetcherInterface::class)->getMock();
+    }
+
+    /**
+     * Set up model fetcher: getVehicleModelData.
+     *
+     * @param string $modelYear
+     * @param string $manufacturer
+     * @param string $modelName
+     * @param array  $vehicleModelData
+     */
+    private function setUpModelFetcherGetVehicleModelData(
+        $modelYear,
+        $manufacturer,
+        $modelName,
+        array $vehicleModelData
+    ) {
+        $this->modelFetcher->expects($this->once())
+            ->method('getVehicleModelData')
+            ->with(
+                $this->identicalTo($modelYear),
+                $this->identicalTo($manufacturer),
+                $this->identicalTo($modelName)
+            )
+            ->will($this->returnValue($vehicleModelData));
+    }
+
+    /**
+     *
+     * Set up response formatter: formatDatasets.
+     *
+     * @param array $vehicleModelData
+     * @param array $formattedModelData
+     */
+    private function setUpResponseFormatterFormatDatasets(array $vehicleModelData, array $formattedModelData)
+    {
+        $this->responseFormatter->expects($this->once())
+            ->method('formatDatasets')
+            ->with($this->identicalTo($vehicleModelData))
+            ->will($this->returnValue($formattedModelData));
     }
 }
