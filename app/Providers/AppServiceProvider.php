@@ -10,6 +10,8 @@ use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\DataConversion\VehicleModelDa
 use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\VehicleModelFetcher;
 use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\VehicleModelFetcherInterface;
 use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\DataConversion\ApiDataConverterInterface;
+use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -32,6 +34,7 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind(ApiDataConverterInterface::class, ApiDataConverter::class);
+        $this->app->bind(ClientInterface::class, Client::class);
         $this->app->bind(VehicleModelDataConverterInterface::class, VehicleModelDataConverter::class);
         $this->app->bind(VehicleModelDataConverterFacadeInterface::class, VehicleModelDataConverterFacade::class);
         $this->app->bind(VehicleModelFetcherInterface::class, VehicleModelFetcher::class);
