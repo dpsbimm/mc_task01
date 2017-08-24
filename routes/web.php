@@ -16,3 +16,5 @@ Route::get('/', function () {
 });
 
 Route::get('/vehicles/{modelYear}/{manufacturer}/{modelName}', 'VehicleController@showModels');
+
+Route::post('/vehicles', 'VehicleController@showModelsPost');
