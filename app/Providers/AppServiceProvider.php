@@ -24,6 +24,8 @@ use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\VehicleFetcher;
 use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\VehicleFetcherInterface;
 use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\VehicleVariantsFetcher;
 use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\VehicleVariantsFetcherInterface;
+use App\Vehicle\VehicleService;
+use App\Vehicle\VehicleServiceInterface;
 use App\Vehicle\VehicleVariantsService;
 use App\Vehicle\VehicleVariantsServiceInterface;
 use GuzzleHttp\Client;
@@ -56,6 +58,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(VehicleDataConverterInterface::class, VehicleDataConverter::class);
         $this->app->bind(VehicleDataConverterFacadeInterface::class, VehicleDataConverterFacade::class);
         $this->app->bind(VehicleFetcherInterface::class, VehicleFetcher::class);
+        $this->app->bind(VehicleServiceInterface::class, VehicleService::class);
         $this->app->bind(VehicleVariantsDataConverterInterface::class, VehicleVariantsDataConverter::class);
         $this->app->bind(VehicleVariantsDataConverterFacadeInterface::class, VehicleVariantsDataConverterFacade::class);
         $this->app->bind(VehicleVariantsDataTransformerInterface::class, VehicleVariantsDataTransformer::class);
