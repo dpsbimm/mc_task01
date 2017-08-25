@@ -29,11 +29,19 @@ class VehicleControllerTest extends \PHPUnit_Framework_TestCase
         $this->controller = null;
     }
 
-    public function testShowVariantsSuccess()
+    /**
+     * @param array       $queryStringValues
+     * @param string|null $expWithRating
+     *
+     * @dataProvider provideShowVariantsData
+     */
+    public function testShowVariantsSuccess(array $queryStringValues, $expWithRating)
     {
         $modelYear = '2017';
         $manufacturer = 'Manufacturer';
         $modelName = 'Model';
+
+        $request = new Request($queryStringValues);
 
         $prepVariantsData = ['some valid variants data'];
 
@@ -44,13 +52,41 @@ class VehicleControllerTest extends \PHPUnit_Framework_TestCase
             ->with(
                 $this->identicalTo($modelYear),
                 $this->identicalTo($manufacturer),
-                $this->identicalTo($modelName)
+                $this->identicalTo($modelName),
+                $this->identicalTo($expWithRating)
             )
             ->will($this->returnValue($prepVariantsData));
 
-        $result = $this->controller->showVariants($apiService, $modelYear, $manufacturer, $modelName);
+        $result = $this->controller->showVariants($apiService, $request, $modelYear, $manufacturer, $modelName);
 
         $this->assertSame($prepVariantsData, $result);
+    }
+
+    /**
+     * Data provider.
+     *
+     * @return array
+     */
+    public function provideShowVariantsData()
+    {
+        return [
+            'no query string values' => [
+                [],
+                null,
+            ],
+            'query string value withRating = "true"' => [
+                [
+                    'withRating' => 'true',
+                ],
+                'true',
+            ],
+            'query string value withRating = "bananas"' => [
+                [
+                    'withRating' => 'bananas',
+                ],
+                'bananas',
+            ],
+        ];
     }
 
     public function testShowVariantsPostSuccess()

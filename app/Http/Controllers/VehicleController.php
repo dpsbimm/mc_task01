@@ -11,15 +11,26 @@ class VehicleController extends Controller
      * Show vehicle variants.
      *
      * @param VehicleApiServiceInterface $apiService
+     * @param Request                    $request
      * @param string                     $modelYear
      * @param string                     $manufacturer
      * @param string                     $modelName
      *
      * @return array
      */
-    public function showVariants(VehicleApiServiceInterface $apiService, $modelYear, $manufacturer, $modelName)
-    {
-        return $apiService->getVehicleVariantsData($modelYear, $manufacturer, $modelName);
+    public function showVariants(
+        VehicleApiServiceInterface $apiService,
+        Request $request,
+        $modelYear,
+        $manufacturer,
+        $modelName
+    ) {
+        return $apiService->getVehicleVariantsData(
+            $modelYear,
+            $manufacturer,
+            $modelName,
+            $request->query('withRating')
+        );
     }
 
     /**
