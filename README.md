@@ -28,6 +28,8 @@ This is a solution for the API task.
 
 # Tests
 
+**Test coverage of my own code is 100%.**
+
 You can run the tests by using the provided phpunit.xml file.
 
 *   Run all tests:
