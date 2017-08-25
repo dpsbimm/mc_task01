@@ -20,7 +20,19 @@ This is a solution for the API task.
     $ composer install
     ```
 
-1.  Launch built-in web server:
+1.  Copy environment configuration (no need to change anything):
+
+    ```console
+    $ cp .env.example .env
+    ```
+
+1.  Generate application key:
+
+    ```console
+    $ php artisan key:generate
+    ```
+
+1.  Launch built-in web server on port 8080:
 
     ```console
     $ php artisan serve --port=8080
