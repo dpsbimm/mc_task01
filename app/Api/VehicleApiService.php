@@ -2,6 +2,7 @@
 
 namespace App\Api;
 
+use App\Api\DataTransformer\VehicleVariantsDataTransformerInterface;
 use App\Api\Formatter\ResponseDatasetsFormatterInterface;
 use App\Vehicle\VehicleVariantsServiceInterface;
 
@@ -18,17 +19,25 @@ class VehicleApiService implements VehicleApiServiceInterface
     private $variantsService;
 
     /**
+     * @var VehicleVariantsDataTransformerInterface
+     */
+    private $variantsTransformer;
+
+    /**
      * Constructor.
      *
-     * @param ResponseDatasetsFormatterInterface $responseFormatter
-     * @param VehicleVariantsServiceInterface    $variantsService
+     * @param ResponseDatasetsFormatterInterface      $responseFormatter
+     * @param VehicleVariantsServiceInterface         $variantsService
+     * @param VehicleVariantsDataTransformerInterface $variantsTransformer
      */
     public function __construct(
         ResponseDatasetsFormatterInterface $responseFormatter,
-        VehicleVariantsServiceInterface $variantsService
+        VehicleVariantsServiceInterface $variantsService,
+        VehicleVariantsDataTransformerInterface $variantsTransformer
     ) {
         $this->responseFormatter = $responseFormatter;
         $this->variantsService = $variantsService;
+        $this->variantsTransformer = $variantsTransformer;
     }
 
     /**
@@ -38,7 +47,9 @@ class VehicleApiService implements VehicleApiServiceInterface
     {
         $variantsData = $this->variantsService->getVehicleVariantsData($modelYear, $manufacturer, $modelName);
 
-        return $this->responseFormatter->formatDatasets($variantsData);
+        $transformedData = $this->variantsTransformer->transformVehicleVariantsData($variantsData);
+
+        return $this->responseFormatter->formatDatasets($transformedData);
     }
 
     /**

@@ -1,22 +1,22 @@
 <?php
 
-namespace Tests\Unit\App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\DataConversion;
+namespace Tests\Unit\App\Api\DataTransformer;
 
-use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\DataConversion\VehicleVariantsDataConverter;
+use App\Api\DataTransformer\VehicleVariantsDataTransformer;
 
-class VehicleVariantsDataConverterTest extends \PHPUnit_Framework_TestCase
+class VehicleVariantsDataTransformerTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var VehicleVariantsDataConverter
+     * @var VehicleVariantsDataTransformer
      */
-    private $converter;
+    private $transformer;
 
     /**
      * PHPUnit: setUp.
      */
     public function setUp()
     {
-        $this->converter = new VehicleVariantsDataConverter();
+        $this->transformer = new VehicleVariantsDataTransformer();
     }
 
     /**
@@ -24,20 +24,20 @@ class VehicleVariantsDataConverterTest extends \PHPUnit_Framework_TestCase
      */
     public function tearDown()
     {
-        $this->converter = null;
+        $this->transformer = null;
     }
 
     /**
-     * @param array $apiData
-     * @param array $expVariantsData
+     * @param array $variantsData
+     * @param array $expTransformedData
      *
      * @dataProvider provideConvertApiDataToVehicleVariantsDataData
      */
-    public function testConvertApiDataToVehicleVariantsDataSuccess(array $apiData, array $expVariantsData)
+    public function testConvertApiDataToVehicleVariantsDataSuccess(array $variantsData, array $expTransformedData)
     {
-        $variantsData = $this->converter->convertApiDataToVehicleVariantsData($apiData);
+        $transformedData = $this->transformer->transformVehicleVariantsData($variantsData);
 
-        $this->assertSame($expVariantsData, $variantsData);
+        $this->assertSame($expTransformedData, $transformedData);
     }
 
     /**
@@ -83,8 +83,8 @@ class VehicleVariantsDataConverterTest extends \PHPUnit_Framework_TestCase
                 ],
                 [
                     [
-                        'VehicleDescription' => 'some description',
-                        'VehicleId'          => 1234,
+                        'Description' => 'some description',
+                        'VehicleId'   => 1234,
                     ],
                 ],
             ],
@@ -101,12 +101,12 @@ class VehicleVariantsDataConverterTest extends \PHPUnit_Framework_TestCase
                 ],
                 [
                     [
-                        'VehicleDescription' => 'some description',
-                        'VehicleId'          => 1234,
+                        'Description' => 'some description',
+                        'VehicleId'   => 1234,
                     ],
                     [
-                        'VehicleDescription' => 'some other description',
-                        'VehicleId'          => 1235,
+                        'Description' => 'some other description',
+                        'VehicleId'   => 1235,
                     ],
                 ],
             ],
@@ -122,8 +122,8 @@ class VehicleVariantsDataConverterTest extends \PHPUnit_Framework_TestCase
                 ],
                 [
                     [
-                        'VehicleDescription' => 'some description',
-                        'VehicleId'          => 1234,
+                        'Description' => 'some description',
+                        'VehicleId'   => 1234,
                     ],
                 ],
             ],

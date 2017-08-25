@@ -16,10 +16,7 @@ class VehicleVariantsDataConverter implements VehicleVariantsDataConverterInterf
                 && array_key_exists('VehicleDescription', $variantData)
                 && array_key_exists('VehicleId', $variantData)
             ) {
-                $variantsData[] = [
-                    'Description' => $variantData['VehicleDescription'],
-                    'VehicleId'   => $variantData['VehicleId'],
-                ];
+                $variantsData[] = $variantData;
             }
         }
 

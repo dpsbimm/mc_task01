@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\App\Api;
 
+use App\Api\DataTransformer\VehicleVariantsDataTransformerInterface;
 use App\Api\Formatter\ResponseDatasetsFormatterInterface;
 use App\Api\VehicleApiService;
 use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\VehicleVariantsFetcherInterface;
@@ -25,14 +26,24 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
     private $variantsService;
 
     /**
+     * @var VehicleVariantsDataTransformerInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $variantsTransformer;
+
+    /**
      * PHPUnit: setUp.
      */
     public function setUp()
     {
         $this->responseFormatter = $this->createResponseDatasetsFormatterInterfaceMock();
         $this->variantsService = $this->createVehicleVariantsServiceInterfaceMock();
+        $this->variantsTransformer = $this->createVehicleVariantsDataTransformerInterfaceMock();
 
-        $this->service = new VehicleApiService($this->responseFormatter, $this->variantsService);
+        $this->service = new VehicleApiService(
+            $this->responseFormatter,
+            $this->variantsService,
+            $this->variantsTransformer
+        );
     }
 
     /**
@@ -42,6 +53,7 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
     {
         $this->service = null;
         $this->variantsService = null;
+        $this->variantsTransformer = null;
         $this->responseFormatter = null;
     }
 
@@ -52,11 +64,14 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
         $modelName = 'Model';
 
         $prepVariantsData = ['some valid variants data'];
-        $prepFormattedData = ['some formatted valid variants data'];
+        $prepTransformedData = ['some transformed variants data'];
+        $prepFormattedData = ['some formatted variants data'];
 
         $this->setUpVariantsServiceGetVehicleVariantsData($modelYear, $manufacturer, $modelName, $prepVariantsData);
 
-        $this->setUpResponseFormatterFormatDatasets($prepVariantsData, $prepFormattedData);
+        $this->setUpVariantsTransformerTransformVehicleVariantsData($prepVariantsData, $prepTransformedData);
+
+        $this->setUpResponseFormatterFormatDatasets($prepTransformedData, $prepFormattedData);
 
         $result = $this->service->getVehicleVariantsData($modelYear, $manufacturer, $modelName);
 
@@ -120,6 +135,7 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
         ];
 
         $prepVariantsData = ['some vehicle variants data'];
+        $prepTransformedData = ['some transformed variants data'];
         $prepFormattedData = ['some formatted vehicle variants data'];
 
         $this->setUpVariantsServiceGetVehicleVariantsData(
@@ -129,7 +145,9 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
             $prepVariantsData
         );
 
-        $this->setUpResponseFormatterFormatDatasets($prepVariantsData, $prepFormattedData);
+        $this->setUpVariantsTransformerTransformVehicleVariantsData($prepVariantsData, $prepTransformedData);
+
+        $this->setUpResponseFormatterFormatDatasets($prepTransformedData, $prepFormattedData);
 
         $result = $this->service->getVehicleVariantsDataByArray($modelData);
 
@@ -144,6 +162,16 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
     private function createResponseDatasetsFormatterInterfaceMock()
     {
         return $this->getMockBuilder(ResponseDatasetsFormatterInterface::class)->getMock();
+    }
+
+    /**
+     * Create mock for VehicleVariantsDataTransformerInterface.
+     *
+     * @return VehicleVariantsDataTransformerInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private function createVehicleVariantsDataTransformerInterfaceMock()
+    {
+        return $this->getMockBuilder(VehicleVariantsDataTransformerInterface::class)->getMock();
     }
 
     /**
@@ -193,5 +221,19 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
                 $this->identicalTo($modelName)
             )
             ->will($this->returnValue($variantsData));
+    }
+
+    /**
+     * Set up variants transformer: transformVehicleVariantsData.
+     *
+     * @param array $prepVariantsData
+     * @param array $prepTransformedData
+     */
+    private function setUpVariantsTransformerTransformVehicleVariantsData(array $prepVariantsData, array $prepTransformedData)
+    {
+        $this->variantsTransformer->expects($this->once())
+            ->method('transformVehicleVariantsData')
+            ->with($this->identicalTo($prepVariantsData))
+            ->will($this->returnValue($prepTransformedData));
     }
 }
