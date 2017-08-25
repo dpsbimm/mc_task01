@@ -3,9 +3,11 @@
 namespace Tests\Unit\App\Api;
 
 use App\Api\DataTransformer\VehicleVariantsDataTransformerInterface;
+use App\Api\DataTransformer\VehicleVariantsDataWithRatingTransformerInterface;
 use App\Api\Formatter\ResponseDatasetsFormatterInterface;
 use App\Api\VehicleApiService;
 use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\VehicleVariantsFetcherInterface;
+use App\Vehicle\VehicleServiceInterface;
 use App\Vehicle\VehicleVariantsServiceInterface;
 
 class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
@@ -31,6 +33,16 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
     private $variantsTransformer;
 
     /**
+     * @var VehicleVariantsDataWithRatingTransformerInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $variantsWithRatingTransformer;
+
+    /**
+     * @var VehicleServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $vehicleService;
+
+    /**
      * PHPUnit: setUp.
      */
     public function setUp()
@@ -38,11 +50,15 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
         $this->responseFormatter = $this->createResponseDatasetsFormatterInterfaceMock();
         $this->variantsService = $this->createVehicleVariantsServiceInterfaceMock();
         $this->variantsTransformer = $this->createVehicleVariantsDataTransformerInterfaceMock();
+        $this->variantsWithRatingTransformer = $this->createVehicleVariantsDataWithRatingTransformerInterfaceMock();
+        $this->vehicleService = $this->createVehicleServiceInterfaceMock();
 
         $this->service = new VehicleApiService(
             $this->responseFormatter,
             $this->variantsService,
-            $this->variantsTransformer
+            $this->variantsTransformer,
+            $this->variantsWithRatingTransformer,
+            $this->vehicleService
         );
     }
 
@@ -52,30 +68,11 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
     public function tearDown()
     {
         $this->service = null;
+        $this->vehicleService = null;
+        $this->variantsWithRatingTransformer = null;
         $this->variantsService = null;
         $this->variantsTransformer = null;
         $this->responseFormatter = null;
-    }
-
-    public function testGetVehicleVariantsDataSuccess()
-    {
-        $modelYear = '2017';
-        $manufacturer = 'Manufacturer';
-        $modelName = 'Model';
-
-        $prepVariantsData = ['some valid variants data'];
-        $prepTransformedData = ['some transformed variants data'];
-        $prepFormattedData = ['some formatted variants data'];
-
-        $this->setUpVariantsServiceGetVehicleVariantsData($modelYear, $manufacturer, $modelName, $prepVariantsData);
-
-        $this->setUpVariantsTransformerTransformVehicleVariantsData($prepVariantsData, $prepTransformedData);
-
-        $this->setUpResponseFormatterFormatDatasets($prepTransformedData, $prepFormattedData);
-
-        $result = $this->service->getVehicleVariantsData($modelYear, $manufacturer, $modelName);
-
-        $this->assertSame($prepFormattedData, $result);
     }
 
     /**
@@ -154,6 +151,75 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($prepFormattedData, $result);
     }
 
+    public function testGetVehicleVariantsDataSuccess()
+    {
+        $modelYear = '2017';
+        $manufacturer = 'Manufacturer';
+        $modelName = 'Model';
+
+        $prepVariantsData = ['some valid variants data'];
+        $prepTransformedData = ['some transformed variants data'];
+        $prepFormattedData = ['some formatted variants data'];
+
+        $this->setUpVariantsServiceGetVehicleVariantsData($modelYear, $manufacturer, $modelName, $prepVariantsData);
+
+        $this->setUpVariantsTransformerTransformVehicleVariantsData($prepVariantsData, $prepTransformedData);
+
+        $this->setUpResponseFormatterFormatDatasets($prepTransformedData, $prepFormattedData);
+
+        $result = $this->service->getVehicleVariantsData($modelYear, $manufacturer, $modelName);
+
+        $this->assertSame($prepFormattedData, $result);
+    }
+
+    public function testGetVehicleVariantsDataSuccessWithRating()
+    {
+        $modelYear = '2017';
+        $manufacturer = 'Manufacturer';
+        $modelName = 'Model';
+        $withRating = 'true';
+
+        $prepVehicleIds = [1234, 1235];
+        $prepVariantsData = [
+            [
+                'VehicleId' => $prepVehicleIds[0],
+            ],
+            [
+                'VehicleId' => $prepVehicleIds[1],
+            ],
+        ];
+        $prepVehicleDatasets = [
+            ['the replaced'],
+            ['datasets'],
+        ];
+        $prepTransformedData = ['some transformed variants data'];
+        $prepFormattedData = ['some formatted variants data'];
+
+        $this->setUpVariantsServiceGetVehicleVariantsData($modelYear, $manufacturer, $modelName, $prepVariantsData);
+
+        $this->vehicleService->expects($this->exactly(count($prepVehicleDatasets)))
+            ->method('getVehicleData')
+            ->withConsecutive(
+                [$this->identicalTo($prepVehicleIds[0])],
+                [$this->identicalTo($prepVehicleIds[1])]
+            )
+            ->willReturnOnConsecutiveCalls(
+                $prepVehicleDatasets[0],
+                $prepVehicleDatasets[1]
+            );
+
+        $this->variantsWithRatingTransformer->expects($this->once())
+            ->method('transformVehicleVariantsDataWithRating')
+            ->with($this->identicalTo($prepVehicleDatasets))
+            ->will($this->returnValue($prepTransformedData));
+
+        $this->setUpResponseFormatterFormatDatasets($prepTransformedData, $prepFormattedData);
+
+        $result = $this->service->getVehicleVariantsData($modelYear, $manufacturer, $modelName, $withRating);
+
+        $this->assertSame($prepFormattedData, $result);
+    }
+
     /**
      * Create mock for ResponseDatasetsFormatterInterface.
      *
@@ -165,6 +231,16 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Create mock for VehicleServiceInterface.
+     *
+     * @return VehicleServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private function createVehicleServiceInterfaceMock()
+    {
+        return $this->getMockBuilder(VehicleServiceInterface::class)->getMock();
+    }
+
+    /**
      * Create mock for VehicleVariantsDataTransformerInterface.
      *
      * @return VehicleVariantsDataTransformerInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -172,6 +248,16 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
     private function createVehicleVariantsDataTransformerInterfaceMock()
     {
         return $this->getMockBuilder(VehicleVariantsDataTransformerInterface::class)->getMock();
+    }
+
+    /**
+     * Create mock for VehicleVariantsDataWithRatingTransformerInterface.
+     *
+     * @return VehicleVariantsDataWithRatingTransformerInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private function createVehicleVariantsDataWithRatingTransformerInterfaceMock()
+    {
+        return $this->getMockBuilder(VehicleVariantsDataWithRatingTransformerInterface::class)->getMock();
     }
 
     /**
@@ -229,8 +315,10 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
      * @param array $prepVariantsData
      * @param array $prepTransformedData
      */
-    private function setUpVariantsTransformerTransformVehicleVariantsData(array $prepVariantsData, array $prepTransformedData)
-    {
+    private function setUpVariantsTransformerTransformVehicleVariantsData(
+        array $prepVariantsData,
+        array $prepTransformedData
+    ) {
         $this->variantsTransformer->expects($this->once())
             ->method('transformVehicleVariantsData')
             ->with($this->identicalTo($prepVariantsData))

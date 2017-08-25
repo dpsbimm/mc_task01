@@ -7,13 +7,14 @@ interface VehicleApiServiceInterface
     /**
      * Get vehicle variants data.
      *
-     * @param string $modelYear
-     * @param string $manufacturer
-     * @param string $modelName
+     * @param string      $modelYear
+     * @param string      $manufacturer
+     * @param string      $modelName
+     * @param string|null $withRating
      *
      * @return array
      */
-    public function getVehicleVariantsData($modelYear, $manufacturer, $modelName);
+    public function getVehicleVariantsData($modelYear, $manufacturer, $modelName, $withRating = null);
 
     /**
      * Get vehicle variants data by array.
