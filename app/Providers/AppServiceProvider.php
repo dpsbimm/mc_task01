@@ -12,6 +12,8 @@ use App\Api\VehicleApiService;
 use App\Api\VehicleApiServiceInterface;
 use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\DataConversion\ApiDataConverter;
 use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\DataConversion\ApiDataConverterInterface;
+use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\DataConversion\VehicleDataConverter;
+use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\DataConversion\VehicleDataConverterInterface;
 use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\DataConversion\VehicleVariantsDataConverter;
 use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\DataConversion\VehicleVariantsDataConverterFacade;
 use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\DataConversion\VehicleVariantsDataConverterFacadeInterface;
@@ -47,6 +49,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ClientInterface::class, Client::class);
         $this->app->bind(ResponseDatasetsFormatterInterface::class, ResponseDatasetsFormatter::class);
         $this->app->bind(VehicleApiServiceInterface::class, VehicleApiService::class);
+        $this->app->bind(VehicleDataConverterInterface::class, VehicleDataConverter::class);
         $this->app->bind(VehicleVariantsDataConverterInterface::class, VehicleVariantsDataConverter::class);
         $this->app->bind(VehicleVariantsDataConverterFacadeInterface::class, VehicleVariantsDataConverterFacade::class);
         $this->app->bind(VehicleVariantsDataTransformerInterface::class, VehicleVariantsDataTransformer::class);
