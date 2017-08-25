@@ -35,18 +35,6 @@ class VehicleFetcher implements VehicleFetcherInterface
     }
 
     /**
-     * Get request URL.
-     *
-     * @param string $vehicleId
-     *
-     * @return string
-     */
-    private function getRequestUrl($vehicleId)
-    {
-        return sprintf(self::REQUEST_URL_TEMPLATE, $vehicleId);
-    }
-
-    /**
      * @inheritDoc
      */
     public function getVehicleData($vehicleId)
@@ -70,5 +58,17 @@ class VehicleFetcher implements VehicleFetcherInterface
         }
 
         return $modelData;
+    }
+
+    /**
+     * Get request URL.
+     *
+     * @param string $vehicleId
+     *
+     * @return string
+     */
+    private function getRequestUrl($vehicleId)
+    {
+        return sprintf(self::REQUEST_URL_TEMPLATE, $vehicleId);
     }
 }

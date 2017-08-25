@@ -271,7 +271,6 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     *
      * Set up response formatter: formatDatasets.
      *
      * @param array $variantsData

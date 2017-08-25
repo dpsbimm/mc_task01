@@ -36,20 +36,6 @@ class VehicleVariantsFetcher implements VehicleVariantsFetcherInterface
     }
 
     /**
-     * Get request URL.
-     *
-     * @param string $modelYear
-     * @param string $manufacturer
-     * @param string $model
-     *
-     * @return string
-     */
-    private function getRequestUrl($modelYear, $manufacturer, $model)
-    {
-        return sprintf(self::REQUEST_URL_TEMPLATE, $modelYear, $manufacturer, $model);
-    }
-
-    /**
      * @inheritDoc
      */
     public function getVehicleVariantsData($modelYear, $manufacturer, $modelName)
@@ -73,5 +59,19 @@ class VehicleVariantsFetcher implements VehicleVariantsFetcherInterface
         }
 
         return $variantsData;
+    }
+
+    /**
+     * Get request URL.
+     *
+     * @param string $modelYear
+     * @param string $manufacturer
+     * @param string $model
+     *
+     * @return string
+     */
+    private function getRequestUrl($modelYear, $manufacturer, $model)
+    {
+        return sprintf(self::REQUEST_URL_TEMPLATE, $modelYear, $manufacturer, $model);
     }
 }

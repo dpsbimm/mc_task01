@@ -59,42 +59,6 @@ class VehicleApiService implements VehicleApiServiceInterface
     }
 
     /**
-     * Check if withRating is set to a value that is equivalent to "true".
-     *
-     * @param string $withRating
-     *
-     * @return bool
-     */
-    private function checkWithRating($withRating)
-    {
-        return ('true' === $withRating);
-    }
-
-    /**
-     * Get transformed data for vehicle variants data.
-     *
-     * @param array $variantsData
-     * @param bool  $withRating
-     *
-     * @return array
-     */
-    private function getTransformedDataForVehicleVariantsData(array $variantsData, $withRating)
-    {
-        if ($withRating) {
-            foreach ($variantsData as &$variantData) {
-                $variantData = $this->vehicleService->getVehicleData($variantData['VehicleId']);
-            }
-
-            $transformedData = $this->variantsWithRatingTransformer
-                ->transformVehicleVariantsDataWithRating($variantsData);
-        } else {
-            $transformedData = $this->variantsTransformer->transformVehicleVariantsData($variantsData);
-        }
-
-        return $transformedData;
-    }
-
-    /**
      * @inheritDoc
      */
     public function getVehicleVariantsData($modelYear, $manufacturer, $modelName, $withRating = null)
@@ -129,5 +93,41 @@ class VehicleApiService implements VehicleApiServiceInterface
         }
 
         return $result;
+    }
+
+    /**
+     * Check if withRating is set to a value that is equivalent to "true".
+     *
+     * @param string $withRating
+     *
+     * @return bool
+     */
+    private function checkWithRating($withRating)
+    {
+        return ('true' === $withRating);
+    }
+
+    /**
+     * Get transformed data for vehicle variants data.
+     *
+     * @param array $variantsData
+     * @param bool  $withRating
+     *
+     * @return array
+     */
+    private function getTransformedDataForVehicleVariantsData(array $variantsData, $withRating)
+    {
+        if ($withRating) {
+            foreach ($variantsData as &$variantData) {
+                $variantData = $this->vehicleService->getVehicleData($variantData['VehicleId']);
+            }
+
+            $transformedData = $this->variantsWithRatingTransformer
+                ->transformVehicleVariantsDataWithRating($variantsData);
+        } else {
+            $transformedData = $this->variantsTransformer->transformVehicleVariantsData($variantsData);
+        }
+
+        return $transformedData;
     }
 }
