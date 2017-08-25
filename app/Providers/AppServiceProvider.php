@@ -14,6 +14,8 @@ use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\DataConversion\VehicleVariant
 use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\DataConversion\VehicleVariantsDataConverterInterface;
 use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\VehicleVariantsFetcher;
 use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\VehicleVariantsFetcherInterface;
+use App\Vehicle\VehicleVariantsService;
+use App\Vehicle\VehicleVariantsServiceInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use Illuminate\Support\ServiceProvider;
@@ -44,5 +46,6 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(VehicleVariantsDataConverterInterface::class, VehicleVariantsDataConverter::class);
         $this->app->bind(VehicleVariantsDataConverterFacadeInterface::class, VehicleVariantsDataConverterFacade::class);
         $this->app->bind(VehicleVariantsFetcherInterface::class, VehicleVariantsFetcher::class);
+        $this->app->bind(VehicleVariantsServiceInterface::class, VehicleVariantsService::class);
     }
 }

@@ -3,7 +3,7 @@
 namespace App\Api;
 
 use App\Api\Formatter\ResponseDatasetsFormatterInterface;
-use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\VehicleVariantsFetcherInterface;
+use App\Vehicle\VehicleVariantsServiceInterface;
 
 class VehicleApiService implements VehicleApiServiceInterface
 {
@@ -13,22 +13,22 @@ class VehicleApiService implements VehicleApiServiceInterface
     private $responseFormatter;
 
     /**
-     * @var VehicleVariantsFetcherInterface
+     * @var VehicleVariantsServiceInterface
      */
-    private $variantsFetcher;
+    private $variantsService;
 
     /**
      * Constructor.
      *
      * @param ResponseDatasetsFormatterInterface $responseFormatter
-     * @param VehicleVariantsFetcherInterface    $variantsFetcher
+     * @param VehicleVariantsServiceInterface    $variantsService
      */
     public function __construct(
         ResponseDatasetsFormatterInterface $responseFormatter,
-        VehicleVariantsFetcherInterface $variantsFetcher
+        VehicleVariantsServiceInterface $variantsService
     ) {
         $this->responseFormatter = $responseFormatter;
-        $this->variantsFetcher = $variantsFetcher;
+        $this->variantsService = $variantsService;
     }
 
     /**
@@ -36,7 +36,7 @@ class VehicleApiService implements VehicleApiServiceInterface
      */
     public function getVehicleVariantsData($modelYear, $manufacturer, $modelName)
     {
-        $variantsData = $this->variantsFetcher->getVehicleVariantsData($modelYear, $manufacturer, $modelName);
+        $variantsData = $this->variantsService->getVehicleVariantsData($modelYear, $manufacturer, $modelName);
 
         return $this->responseFormatter->formatDatasets($variantsData);
     }

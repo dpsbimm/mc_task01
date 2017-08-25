@@ -5,6 +5,7 @@ namespace Tests\Unit\App\Api;
 use App\Api\Formatter\ResponseDatasetsFormatterInterface;
 use App\Api\VehicleApiService;
 use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\VehicleVariantsFetcherInterface;
+use App\Vehicle\VehicleVariantsServiceInterface;
 
 class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
 {
@@ -21,7 +22,7 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @var VehicleVariantsFetcherInterface|\PHPUnit_Framework_MockObject_MockObject
      */
-    private $variantsFetcher;
+    private $variantsService;
 
     /**
      * PHPUnit: setUp.
@@ -29,9 +30,9 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->responseFormatter = $this->createResponseDatasetsFormatterInterfaceMock();
-        $this->variantsFetcher = $this->createVehicleVariantsFetcherInterfaceMock();
+        $this->variantsService = $this->createVehicleVariantsServiceInterfaceMock();
 
-        $this->service = new VehicleApiService($this->responseFormatter, $this->variantsFetcher);
+        $this->service = new VehicleApiService($this->responseFormatter, $this->variantsService);
     }
 
     /**
@@ -40,7 +41,7 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
     public function tearDown()
     {
         $this->service = null;
-        $this->variantsFetcher = null;
+        $this->variantsService = null;
         $this->responseFormatter = null;
     }
 
@@ -53,7 +54,7 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
         $prepVariantsData = ['some valid variants data'];
         $prepFormattedData = ['some formatted valid variants data'];
 
-        $this->setUpVariantsFetcherGetVehicleVariantsData($modelYear, $manufacturer, $modelName, $prepVariantsData);
+        $this->setUpVariantsServiceGetVehicleVariantsData($modelYear, $manufacturer, $modelName, $prepVariantsData);
 
         $this->setUpResponseFormatterFormatDatasets($prepVariantsData, $prepFormattedData);
 
@@ -121,7 +122,7 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
         $prepVariantsData = ['some vehicle variants data'];
         $prepFormattedData = ['some formatted vehicle variants data'];
 
-        $this->setUpVariantsFetcherGetVehicleVariantsData(
+        $this->setUpVariantsServiceGetVehicleVariantsData(
             $modelData['modelYear'],
             $modelData['manufacturer'],
             $modelData['model'],
@@ -146,13 +147,13 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Create mock for VehicleVariantsFetcherInterface.
+     * Create mock for VehicleVariantsServiceInterface.
      *
-     * @return VehicleVariantsFetcherInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @return VehicleVariantsServiceInterface|\PHPUnit_Framework_MockObject_MockObject
      */
-    private function createVehicleVariantsFetcherInterfaceMock()
+    private function createVehicleVariantsServiceInterfaceMock()
     {
-        return $this->getMockBuilder(VehicleVariantsFetcherInterface::class)->getMock();
+        return $this->getMockBuilder(VehicleVariantsServiceInterface::class)->getMock();
     }
 
     /**
@@ -171,20 +172,20 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Set up variants fetcher: getVehicleVariantsData.
+     * Set up variants service: getVehicleVariantsData.
      *
      * @param string $modelYear
      * @param string $manufacturer
      * @param string $modelName
      * @param array  $variantsData
      */
-    private function setUpVariantsFetcherGetVehicleVariantsData(
+    private function setUpVariantsServiceGetVehicleVariantsData(
         $modelYear,
         $manufacturer,
         $modelName,
         array $variantsData
     ) {
-        $this->variantsFetcher->expects($this->once())
+        $this->variantsService->expects($this->once())
             ->method('getVehicleVariantsData')
             ->with(
                 $this->identicalTo($modelYear),
