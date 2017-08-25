@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class VehicleController extends Controller
 {
     /**
-     * Show models.
+     * Show vehicle variants.
      *
      * @param VehicleApiServiceInterface $apiService
      * @param string                     $modelYear
@@ -17,23 +17,23 @@ class VehicleController extends Controller
      *
      * @return array
      */
-    public function showModels(VehicleApiServiceInterface $apiService, $modelYear, $manufacturer, $modelName)
+    public function showVariants(VehicleApiServiceInterface $apiService, $modelYear, $manufacturer, $modelName)
     {
-        return $apiService->getVehicleModelData($modelYear, $manufacturer, $modelName);
+        return $apiService->getVehicleVariantsData($modelYear, $manufacturer, $modelName);
     }
 
     /**
-     * Show models (data input via POST).
+     * Show vehicle variants (data input via POST).
      *
      * @param VehicleApiServiceInterface $apiService
      * @param Request                    $request
      *
      * @return array
      */
-    public function showModelsPost(VehicleApiServiceInterface $apiService, Request $request)
+    public function showVariantsPost(VehicleApiServiceInterface $apiService, Request $request)
     {
         $jsonData = $request->json()->all();
 
-        return $apiService->getVehicleModelDataByArray($jsonData);
+        return $apiService->getVehicleVariantsDataByArray($jsonData);
     }
 }

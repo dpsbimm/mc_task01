@@ -29,31 +29,31 @@ class VehicleControllerTest extends \PHPUnit_Framework_TestCase
         $this->controller = null;
     }
 
-    public function testShowModelsSuccess()
+    public function testShowVariantsSuccess()
     {
         $modelYear = '2017';
         $manufacturer = 'Manufacturer';
         $modelName = 'Model';
 
-        $prepModelData = ['some valid model data'];
+        $prepVariantsData = ['some valid variants data'];
 
         $apiService = $this->createVehicleApiServiceInterfaceMock();
 
         $apiService->expects($this->once())
-            ->method('getVehicleModelData')
+            ->method('getVehicleVariantsData')
             ->with(
                 $this->identicalTo($modelYear),
                 $this->identicalTo($manufacturer),
                 $this->identicalTo($modelName)
             )
-            ->will($this->returnValue($prepModelData));
+            ->will($this->returnValue($prepVariantsData));
 
-        $result = $this->controller->showModels($apiService, $modelYear, $manufacturer, $modelName);
+        $result = $this->controller->showVariants($apiService, $modelYear, $manufacturer, $modelName);
 
-        $this->assertSame($prepModelData, $result);
+        $this->assertSame($prepVariantsData, $result);
     }
 
-    public function testShowModelsPostSuccess()
+    public function testShowVariantsPostSuccess()
     {
         $jsonData = [
             'valid'   => 'model',
@@ -62,18 +62,18 @@ class VehicleControllerTest extends \PHPUnit_Framework_TestCase
 
         $request = new Request([], [], [], [], [], [], json_encode($jsonData));
 
-        $prepModelData = ['some valid model data'];
+        $prepVariantsData = ['some valid variants data'];
 
         $apiService = $this->createVehicleApiServiceInterfaceMock();
 
         $apiService->expects($this->once())
-            ->method('getVehicleModelDataByArray')
+            ->method('getVehicleVariantsDataByArray')
             ->with($this->identicalTo($jsonData))
-            ->will($this->returnValue($prepModelData));
+            ->will($this->returnValue($prepVariantsData));
 
-        $result = $this->controller->showModelsPost($apiService, $request);
+        $result = $this->controller->showVariantsPost($apiService, $request);
 
-        $this->assertSame($prepModelData, $result);
+        $this->assertSame($prepVariantsData, $result);
     }
 
     /**

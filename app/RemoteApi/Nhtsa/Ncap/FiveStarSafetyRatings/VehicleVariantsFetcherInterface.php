@@ -2,10 +2,10 @@
 
 namespace App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings;
 
-interface VehicleModelFetcherInterface
+interface VehicleVariantsFetcherInterface
 {
     /**
-     * Get vehicle model data from API.
+     * Get vehicle variants data from API.
      *
      * @param string $modelYear
      * @param string $manufacturer
@@ -13,5 +13,5 @@ interface VehicleModelFetcherInterface
      *
      * @return array
      */
-    public function getVehicleModelData($modelYear, $manufacturer, $modelName);
+    public function getVehicleVariantsData($modelYear, $manufacturer, $modelName);
 }

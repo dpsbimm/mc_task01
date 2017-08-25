@@ -15,6 +15,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/vehicles/{modelYear}/{manufacturer}/{modelName}', 'VehicleController@showModels');
+Route::get('/vehicles/{modelYear}/{manufacturer}/{modelName}', 'VehicleController@showVariants');
 
-Route::post('/vehicles', 'VehicleController@showModelsPost');
+Route::post('/vehicles', 'VehicleController@showVariantsPost');

@@ -2,13 +2,13 @@
 
 namespace Tests\Unit\App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings;
 
-use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\DataConversion\VehicleModelDataConverterFacadeInterface;
-use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\VehicleModelFetcher;
+use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\DataConversion\VehicleVariantsDataConverterFacadeInterface;
+use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\VehicleVariantsFetcher;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Psr7\Response;
 
-class VehicleModelFetcherTest extends \PHPUnit_Framework_TestCase
+class VehicleVariantsFetcherTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var ClientInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -16,12 +16,12 @@ class VehicleModelFetcherTest extends \PHPUnit_Framework_TestCase
     private $apiClient;
 
     /**
-     * @var VehicleModelFetcher
+     * @var VehicleVariantsFetcher
      */
     private $fetcher;
 
     /**
-     * @var VehicleModelDataConverterFacadeInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var VehicleVariantsDataConverterFacadeInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $dataConverterFacade;
 
@@ -31,9 +31,9 @@ class VehicleModelFetcherTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->apiClient = $this->createClientInterfaceMock();
-        $this->dataConverterFacade = $this->createVehicleModelDataConverterFacadeInterfaceMock();
+        $this->dataConverterFacade = $this->createVehicleVariantsDataConverterFacadeInterfaceMock();
 
-        $this->fetcher = new VehicleModelFetcher($this->apiClient, $this->dataConverterFacade);
+        $this->fetcher = new VehicleVariantsFetcher($this->apiClient, $this->dataConverterFacade);
     }
 
     /**
@@ -46,7 +46,7 @@ class VehicleModelFetcherTest extends \PHPUnit_Framework_TestCase
         $this->apiClient = null;
     }
 
-    public function testGetVehicleModelDataSuccessConnectionOrRemoteError()
+    public function testGetVehicleVariantsDataSuccessConnectionOrRemoteError()
     {
         $modelYear = '2017';
         $manufacturer = 'Manufacturer';
@@ -56,12 +56,12 @@ class VehicleModelFetcherTest extends \PHPUnit_Framework_TestCase
             ->method('request')
             ->will($this->throwException(new TransferException()));
 
-        $modelData = $this->fetcher->getVehicleModelData($modelYear, $manufacturer, $modelName);
+        $variantsData = $this->fetcher->getVehicleVariantsData($modelYear, $manufacturer, $modelName);
 
-        $this->assertSame([], $modelData);
+        $this->assertSame([], $variantsData);
     }
 
-    public function testGetVehicleModelDataSuccessInvalidResponseCode()
+    public function testGetVehicleVariantsDataSuccessInvalidResponseCode()
     {
         $modelYear = '2017';
         $manufacturer = 'Manufacturer';
@@ -79,12 +79,12 @@ class VehicleModelFetcherTest extends \PHPUnit_Framework_TestCase
             )
             ->will($this->returnValue($prepResponse));
 
-        $modelData = $this->fetcher->getVehicleModelData($modelYear, $manufacturer, $modelName);
+        $variantsData = $this->fetcher->getVehicleVariantsData($modelYear, $manufacturer, $modelName);
 
-        $this->assertSame([], $modelData);
+        $this->assertSame([], $variantsData);
     }
 
-    public function testGetVehicleModelDataSuccessValidResponseCode()
+    public function testGetVehicleVariantsDataSuccessValidResponseCode()
     {
         $modelYear = '2017';
         $manufacturer = 'Manufacturer';
@@ -100,7 +100,7 @@ class VehicleModelFetcherTest extends \PHPUnit_Framework_TestCase
         $prepResponseCode = 200;
         $prepResponseBody = 'valid response body';
         $prepResponse = new Response($prepResponseCode, [], $prepResponseBody);
-        $prepModelData = ['valid vehicle model data'];
+        $prepVariantsData = ['valid vehicle variants data'];
 
         $this->apiClient->expects($this->once())
             ->method('request')
@@ -111,13 +111,13 @@ class VehicleModelFetcherTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($prepResponse));
 
         $this->dataConverterFacade->expects($this->once())
-            ->method('convertApiResponseToVehicleModelData')
+            ->method('convertApiResponseToVehicleVariantsData')
             ->with($this->identicalTo($prepResponseBody))
-            ->will($this->returnValue($prepModelData));
+            ->will($this->returnValue($prepVariantsData));
 
-        $modelData = $this->fetcher->getVehicleModelData($modelYear, $manufacturer, $modelName);
+        $variantsData = $this->fetcher->getVehicleVariantsData($modelYear, $manufacturer, $modelName);
 
-        $this->assertSame($prepModelData, $modelData);
+        $this->assertSame($prepVariantsData, $variantsData);
     }
 
     /**
@@ -131,12 +131,12 @@ class VehicleModelFetcherTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Create mock for VehicleModelDataConverterFacadeInterface.
+     * Create mock for VehicleVariantsDataConverterFacadeInterface.
      *
-     * @return VehicleModelDataConverterFacadeInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @return VehicleVariantsDataConverterFacadeInterface|\PHPUnit_Framework_MockObject_MockObject
      */
-    private function createVehicleModelDataConverterFacadeInterfaceMock()
+    private function createVehicleVariantsDataConverterFacadeInterfaceMock()
     {
-        return $this->getMockBuilder(VehicleModelDataConverterFacadeInterface::class)->getMock();
+        return $this->getMockBuilder(VehicleVariantsDataConverterFacadeInterface::class)->getMock();
     }
 }

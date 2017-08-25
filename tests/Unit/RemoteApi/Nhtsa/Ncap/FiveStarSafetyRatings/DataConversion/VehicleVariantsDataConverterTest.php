@@ -2,12 +2,12 @@
 
 namespace Tests\Unit\App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\DataConversion;
 
-use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\DataConversion\VehicleModelDataConverter;
+use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\DataConversion\VehicleVariantsDataConverter;
 
-class VehicleModelDataConverterTest extends \PHPUnit_Framework_TestCase
+class VehicleVariantsDataConverterTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var VehicleModelDataConverter
+     * @var VehicleVariantsDataConverter
      */
     private $converter;
 
@@ -16,7 +16,7 @@ class VehicleModelDataConverterTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->converter = new VehicleModelDataConverter();
+        $this->converter = new VehicleVariantsDataConverter();
     }
 
     /**
@@ -29,15 +29,15 @@ class VehicleModelDataConverterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param array $apiData
-     * @param array $expVehicleModelData
+     * @param array $expVariantsData
      *
-     * @dataProvider provideConvertApiDataToVehicleModelDataData
+     * @dataProvider provideConvertApiDataToVehicleVariantsDataData
      */
-    public function testConvertApiDataToVehicleModelDataSuccess(array $apiData, array $expVehicleModelData)
+    public function testConvertApiDataToVehicleVariantsDataSuccess(array $apiData, array $expVariantsData)
     {
-        $vehicleModelData = $this->converter->convertApiDataToVehicleModelData($apiData);
+        $variantsData = $this->converter->convertApiDataToVehicleVariantsData($apiData);
 
-        $this->assertSame($expVehicleModelData, $vehicleModelData);
+        $this->assertSame($expVariantsData, $variantsData);
     }
 
     /**
@@ -45,7 +45,7 @@ class VehicleModelDataConverterTest extends \PHPUnit_Framework_TestCase
      *
      * @return array
      */
-    public function provideConvertApiDataToVehicleModelDataData()
+    public function provideConvertApiDataToVehicleVariantsDataData()
     {
         return [
             'empty' => [

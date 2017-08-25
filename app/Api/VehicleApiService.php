@@ -3,58 +3,58 @@
 namespace App\Api;
 
 use App\Api\Formatter\ResponseDatasetsFormatterInterface;
-use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\VehicleModelFetcherInterface;
+use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\VehicleVariantsFetcherInterface;
 
 class VehicleApiService implements VehicleApiServiceInterface
 {
-    /**
-     * @var VehicleModelFetcherInterface
-     */
-    private $modelFetcher;
-
     /**
      * @var ResponseDatasetsFormatterInterface
      */
     private $responseFormatter;
 
     /**
+     * @var VehicleVariantsFetcherInterface
+     */
+    private $variantsFetcher;
+
+    /**
      * Constructor.
      *
-     * @param VehicleModelFetcherInterface       $modelFetcher
      * @param ResponseDatasetsFormatterInterface $responseFormatter
+     * @param VehicleVariantsFetcherInterface    $variantsFetcher
      */
     public function __construct(
-        VehicleModelFetcherInterface $modelFetcher,
-        ResponseDatasetsFormatterInterface $responseFormatter
+        ResponseDatasetsFormatterInterface $responseFormatter,
+        VehicleVariantsFetcherInterface $variantsFetcher
     ) {
-        $this->modelFetcher = $modelFetcher;
         $this->responseFormatter = $responseFormatter;
+        $this->variantsFetcher = $variantsFetcher;
     }
 
     /**
      * @inheritDoc
      */
-    public function getVehicleModelData($modelYear, $manufacturer, $modelName)
+    public function getVehicleVariantsData($modelYear, $manufacturer, $modelName)
     {
-        $modelData = $this->modelFetcher->getVehicleModelData($modelYear, $manufacturer, $modelName);
+        $variantsData = $this->variantsFetcher->getVehicleVariantsData($modelYear, $manufacturer, $modelName);
 
-        return $this->responseFormatter->formatDatasets($modelData);
+        return $this->responseFormatter->formatDatasets($variantsData);
     }
 
     /**
      * @inheritDoc
      */
-    public function getVehicleModelDataByArray($modelData)
+    public function getVehicleVariantsDataByArray($variantsData)
     {
-        if (is_array($modelData)
-            && array_key_exists('modelYear', $modelData)
-            && array_key_exists('manufacturer', $modelData)
-            && array_key_exists('model', $modelData)
+        if (is_array($variantsData)
+            && array_key_exists('modelYear', $variantsData)
+            && array_key_exists('manufacturer', $variantsData)
+            && array_key_exists('model', $variantsData)
         ) {
-            $result = $this->getVehicleModelData(
-                $modelData['modelYear'],
-                $modelData['manufacturer'],
-                $modelData['model']
+            $result = $this->getVehicleVariantsData(
+                $variantsData['modelYear'],
+                $variantsData['manufacturer'],
+                $variantsData['model']
             );
         } else {
             $result = $this->responseFormatter->formatDatasets([]);

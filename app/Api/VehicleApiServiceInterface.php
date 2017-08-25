@@ -5,7 +5,7 @@ namespace App\Api;
 interface VehicleApiServiceInterface
 {
     /**
-     * Get vehicle model data.
+     * Get vehicle variants data.
      *
      * @param string $modelYear
      * @param string $manufacturer
@@ -13,14 +13,14 @@ interface VehicleApiServiceInterface
      *
      * @return array
      */
-    public function getVehicleModelData($modelYear, $manufacturer, $modelName);
+    public function getVehicleVariantsData($modelYear, $manufacturer, $modelName);
 
     /**
-     * Get vehicle model data by array.
+     * Get vehicle variants data by array.
      *
      * @param array|null $modelData
      *
      * @return array
      */
-    public function getVehicleModelDataByArray($modelData);
+    public function getVehicleVariantsDataByArray($modelData);
 }

@@ -2,11 +2,11 @@
 
 namespace App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings;
 
-use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\DataConversion\VehicleModelDataConverterFacadeInterface;
+use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\DataConversion\VehicleVariantsDataConverterFacadeInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 
-class VehicleModelFetcher implements VehicleModelFetcherInterface
+class VehicleVariantsFetcher implements VehicleVariantsFetcherInterface
 {
     const REQUEST_URL_TEMPLATE
         = 'https://one.nhtsa.gov/webapi/api/SafetyRatings/modelyear/%s/make/%s/model/%s?format=json';
@@ -17,19 +17,19 @@ class VehicleModelFetcher implements VehicleModelFetcherInterface
     private $apiClient;
 
     /**
-     * @var VehicleModelDataConverterFacadeInterface
+     * @var VehicleVariantsDataConverterFacadeInterface
      */
     private $dataConverterFacade;
 
     /**
      * Constructor.
      *
-     * @param ClientInterface                          $apiClient
-     * @param VehicleModelDataConverterFacadeInterface $dataConverterFacade
+     * @param ClientInterface                             $apiClient
+     * @param VehicleVariantsDataConverterFacadeInterface $dataConverterFacade
      */
     public function __construct(
         ClientInterface $apiClient,
-        VehicleModelDataConverterFacadeInterface $dataConverterFacade
+        VehicleVariantsDataConverterFacadeInterface $dataConverterFacade
     ) {
         $this->apiClient = $apiClient;
         $this->dataConverterFacade = $dataConverterFacade;
@@ -52,18 +52,18 @@ class VehicleModelFetcher implements VehicleModelFetcherInterface
     /**
      * @inheritDoc
      */
-    public function getVehicleModelData($modelYear, $manufacturer, $modelName)
+    public function getVehicleVariantsData($modelYear, $manufacturer, $modelName)
     {
         $url = $this->getRequestUrl($modelYear, $manufacturer, $modelName);
 
-        $modelData = [];
+        $variantsData = [];
 
         try {
             $response = $this->apiClient->request('GET', $url);
 
             if (200 === $response->getStatusCode()) {
-                $modelData = $this->dataConverterFacade
-                    ->convertApiResponseToVehicleModelData((string) $response->getBody());
+                $variantsData = $this->dataConverterFacade
+                    ->convertApiResponseToVehicleVariantsData((string) $response->getBody());
             }
         } catch (GuzzleException $e) {
             /*
@@ -72,6 +72,6 @@ class VehicleModelFetcher implements VehicleModelFetcherInterface
              */
         }
 
-        return $modelData;
+        return $variantsData;
     }
 }

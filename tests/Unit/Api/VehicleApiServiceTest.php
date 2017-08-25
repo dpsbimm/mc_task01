@@ -4,15 +4,10 @@ namespace Tests\Unit\App\Api;
 
 use App\Api\Formatter\ResponseDatasetsFormatterInterface;
 use App\Api\VehicleApiService;
-use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\VehicleModelFetcherInterface;
+use App\RemoteApi\Nhtsa\Ncap\FiveStarSafetyRatings\VehicleVariantsFetcherInterface;
 
 class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var VehicleModelFetcherInterface|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $modelFetcher;
-
     /**
      * @var ResponseDatasetsFormatterInterface|\PHPUnit_Framework_MockObject_MockObject
      */
@@ -24,14 +19,19 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
     private $service;
 
     /**
+     * @var VehicleVariantsFetcherInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $variantsFetcher;
+
+    /**
      * PHPUnit: setUp.
      */
     public function setUp()
     {
-        $this->modelFetcher = $this->createVehicleModelFetcherInterfaceMock();
         $this->responseFormatter = $this->createResponseDatasetsFormatterInterfaceMock();
+        $this->variantsFetcher = $this->createVehicleVariantsFetcherInterfaceMock();
 
-        $this->service = new VehicleApiService($this->modelFetcher, $this->responseFormatter);
+        $this->service = new VehicleApiService($this->responseFormatter, $this->variantsFetcher);
     }
 
     /**
@@ -39,41 +39,41 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function tearDown()
     {
-        $this->modelFetcher = null;
-        $this->responseFormatter = null;
         $this->service = null;
+        $this->variantsFetcher = null;
+        $this->responseFormatter = null;
     }
 
-    public function testGetVehicleModelDataSuccess()
+    public function testGetVehicleVariantsDataSuccess()
     {
         $modelYear = '2017';
         $manufacturer = 'Manufacturer';
         $modelName = 'Model';
 
-        $prepModelData = ['some valid model data'];
-        $prepFormattedData = ['some formatted valid model data'];
+        $prepVariantsData = ['some valid variants data'];
+        $prepFormattedData = ['some formatted valid variants data'];
 
-        $this->setUpModelFetcherGetVehicleModelData($modelYear, $manufacturer, $modelName, $prepModelData);
+        $this->setUpVariantsFetcherGetVehicleVariantsData($modelYear, $manufacturer, $modelName, $prepVariantsData);
 
-        $this->setUpResponseFormatterFormatDatasets($prepModelData, $prepFormattedData);
+        $this->setUpResponseFormatterFormatDatasets($prepVariantsData, $prepFormattedData);
 
-        $result = $this->service->getVehicleModelData($modelYear, $manufacturer, $modelName);
+        $result = $this->service->getVehicleVariantsData($modelYear, $manufacturer, $modelName);
 
         $this->assertSame($prepFormattedData, $result);
     }
 
     /**
-     * @param array|null $modelData
+     * @param array|null $variantsData
      *
-     * @dataProvider provideGetVehicleModelDataByArrayInvalidArrayData
+     * @dataProvider provideGetVehicleVariantsDataByArrayInvalidArrayData
      */
-    public function testGetVehicleModelDataByArraySuccessInvalidArray($modelData)
+    public function testGetVehicleVariantsDataByArraySuccessInvalidArray($variantsData)
     {
         $prepFormattedData = ['some formatted data'];
 
         $this->setUpResponseFormatterFormatDatasets([], $prepFormattedData);
 
-        $result = $this->service->getVehicleModelDataByArray($modelData);
+        $result = $this->service->getVehicleVariantsDataByArray($variantsData);
 
         $this->assertSame($prepFormattedData, $result);
     }
@@ -83,7 +83,7 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
      *
      * @return array
      */
-    public function provideGetVehicleModelDataByArrayInvalidArrayData()
+    public function provideGetVehicleVariantsDataByArrayInvalidArrayData()
     {
         return [
             'null' => [
@@ -110,7 +110,7 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
-    public function testGetVehicleModelDataByArraySuccessValidArray()
+    public function testGetVehicleVariantsDataByArraySuccessValidArray()
     {
         $modelData = [
             'modelYear'    => 2017,
@@ -118,19 +118,19 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
             'model'        => 'Model',
         ];
 
-        $prepModelData = ['some vehicle model data'];
-        $prepFormattedData = ['some formatted vehicle model data'];
+        $prepVariantsData = ['some vehicle variants data'];
+        $prepFormattedData = ['some formatted vehicle variants data'];
 
-        $this->setUpModelFetcherGetVehicleModelData(
+        $this->setUpVariantsFetcherGetVehicleVariantsData(
             $modelData['modelYear'],
             $modelData['manufacturer'],
             $modelData['model'],
-            $prepModelData
+            $prepVariantsData
         );
 
-        $this->setUpResponseFormatterFormatDatasets($prepModelData, $prepFormattedData);
+        $this->setUpResponseFormatterFormatDatasets($prepVariantsData, $prepFormattedData);
 
-        $result = $this->service->getVehicleModelDataByArray($modelData);
+        $result = $this->service->getVehicleVariantsDataByArray($modelData);
 
         $this->assertSame($prepFormattedData, $result);
     }
@@ -146,51 +146,51 @@ class VehicleApiServiceTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Create mock for VehicleModelFetcherInterface.
+     * Create mock for VehicleVariantsFetcherInterface.
      *
-     * @return VehicleModelFetcherInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @return VehicleVariantsFetcherInterface|\PHPUnit_Framework_MockObject_MockObject
      */
-    private function createVehicleModelFetcherInterfaceMock()
+    private function createVehicleVariantsFetcherInterfaceMock()
     {
-        return $this->getMockBuilder(VehicleModelFetcherInterface::class)->getMock();
-    }
-
-    /**
-     * Set up model fetcher: getVehicleModelData.
-     *
-     * @param string $modelYear
-     * @param string $manufacturer
-     * @param string $modelName
-     * @param array  $vehicleModelData
-     */
-    private function setUpModelFetcherGetVehicleModelData(
-        $modelYear,
-        $manufacturer,
-        $modelName,
-        array $vehicleModelData
-    ) {
-        $this->modelFetcher->expects($this->once())
-            ->method('getVehicleModelData')
-            ->with(
-                $this->identicalTo($modelYear),
-                $this->identicalTo($manufacturer),
-                $this->identicalTo($modelName)
-            )
-            ->will($this->returnValue($vehicleModelData));
+        return $this->getMockBuilder(VehicleVariantsFetcherInterface::class)->getMock();
     }
 
     /**
      *
      * Set up response formatter: formatDatasets.
      *
-     * @param array $vehicleModelData
-     * @param array $formattedModelData
+     * @param array $variantsData
+     * @param array $formattedData
      */
-    private function setUpResponseFormatterFormatDatasets(array $vehicleModelData, array $formattedModelData)
+    private function setUpResponseFormatterFormatDatasets(array $variantsData, array $formattedData)
     {
         $this->responseFormatter->expects($this->once())
             ->method('formatDatasets')
-            ->with($this->identicalTo($vehicleModelData))
-            ->will($this->returnValue($formattedModelData));
+            ->with($this->identicalTo($variantsData))
+            ->will($this->returnValue($formattedData));
+    }
+
+    /**
+     * Set up variants fetcher: getVehicleVariantsData.
+     *
+     * @param string $modelYear
+     * @param string $manufacturer
+     * @param string $modelName
+     * @param array  $variantsData
+     */
+    private function setUpVariantsFetcherGetVehicleVariantsData(
+        $modelYear,
+        $manufacturer,
+        $modelName,
+        array $variantsData
+    ) {
+        $this->variantsFetcher->expects($this->once())
+            ->method('getVehicleVariantsData')
+            ->with(
+                $this->identicalTo($modelYear),
+                $this->identicalTo($manufacturer),
+                $this->identicalTo($modelName)
+            )
+            ->will($this->returnValue($variantsData));
     }
 }
