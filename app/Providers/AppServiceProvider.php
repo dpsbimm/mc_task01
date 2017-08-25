@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Api\DataTransformer\VehicleVariantsDataTransformer;
 use App\Api\DataTransformer\VehicleVariantsDataTransformerInterface;
+use App\Api\DataTransformer\VehicleVariantsDataWithRatingTransformer;
+use App\Api\DataTransformer\VehicleVariantsDataWithRatingTransformerInterface;
 use App\Api\Formatter\ResponseDatasetsFormatter;
 use App\Api\Formatter\ResponseDatasetsFormatterInterface;
 use App\Api\VehicleApiService;
@@ -48,6 +50,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(VehicleVariantsDataConverterInterface::class, VehicleVariantsDataConverter::class);
         $this->app->bind(VehicleVariantsDataConverterFacadeInterface::class, VehicleVariantsDataConverterFacade::class);
         $this->app->bind(VehicleVariantsDataTransformerInterface::class, VehicleVariantsDataTransformer::class);
+        $this->app->bind(
+            VehicleVariantsDataWithRatingTransformerInterface::class,
+            VehicleVariantsDataWithRatingTransformer::class
+        );
         $this->app->bind(VehicleVariantsFetcherInterface::class, VehicleVariantsFetcher::class);
         $this->app->bind(VehicleVariantsServiceInterface::class, VehicleVariantsService::class);
     }
