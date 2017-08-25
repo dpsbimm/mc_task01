@@ -67,11 +67,11 @@ class VehicleControllerTest extends TestCase
                     'Results' => [
                         [
                             'Description' => '2015 Toyota Yaris 3 HB FWD',
-                            'VehicleId'   => 9791
+                            'VehicleId'   => 9791,
                         ],
                         [
                             'Description' => '2015 Toyota Yaris Liftback 5 HB FWD',
-                            'VehicleId'   => 9146
+                            'VehicleId'   => 9146,
                         ],
                     ],
                 ],
@@ -188,11 +188,11 @@ class VehicleControllerTest extends TestCase
                     'Results' => [
                         [
                             'Description' => '2015 Toyota Yaris 3 HB FWD',
-                            'VehicleId'   => 9791
+                            'VehicleId'   => 9791,
                         ],
                         [
                             'Description' => '2015 Toyota Yaris Liftback 5 HB FWD',
-                            'VehicleId'   => 9146
+                            'VehicleId'   => 9146,
                         ],
                     ],
                 ],
